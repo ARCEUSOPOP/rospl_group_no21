@@ -132,59 +132,6 @@ def checkout(request):
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
             return render(request, 'checkout.html')
-            # Convert amount to paise for Razorpay
-            amount_in_paise = int(float(amount) * 100)
-            currency = 'INR'
-
-            # Create a Razorpay Order
-            razorpay_order = razorpay_client.order.create({
-                'amount': amount_in_paise,
-                'currency': currency,
-                'payment_capture': '1'  # Auto capture payment
-            })
-
-            # Save order ID and create update
-            Order.razer_order_id = razorpay_order['id']
-            Order.save()
-            
-            update = OrderUpdate(
-                order_id=Order.order_id,
-                update_desc="Order has been placed and awaiting payment"
-            )
-            update.save()
-            thank = True
-# # PAYMENT INTEGRATION
-
-        # id = Order.order_id
-        # oid=str(id)+"ShopyCart"
-        # param_dict = {
-
-        #     'MID':keys.MID,
-        #     'ORDER_ID': oid,
-        #     'TXN_AMOUNT': str(amount),
-        #     'CUST_ID': email,
-        #     'INDUSTRY_TYPE_ID': 'Retail',
-        #     'WEBSITE': 'WEBSTAGING',
-        #     'CHANNEL_ID': 'WEB',
-        #     'CALLBACK_URL': 'http://127.0.0.1:8000/handlerequest/',
-
-        # }
-        # param_dict['CHECKSUMHASH'] = Checksum.generate_checksum(param_dict, MERCHANT_KEY)
-
-            # Prepare payment details for frontend
-            callback_url = 'paymenthandler/'
-            
-            # Pass details to frontend
-            context = {
-                'razorpay_order_id': razorpay_order['id'],
-                'razorpay_merchant_key': settings.RAZOR_KEY_ID,
-                'razorpay_amount': amount_in_paise,
-                'currency': currency,
-                'callback_url': callback_url
-            }
-
-        return render(request, 'index1.html', context=context)
-        # return render(request, 'paytm.html', {'param_dict': param_dict})
 
     return render(request, 'checkout.html')
 

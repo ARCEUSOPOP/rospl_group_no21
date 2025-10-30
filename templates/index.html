@@ -56,7 +56,7 @@ Home
               Price:<span id="pricepr{{i.id}}">{{i.price}}</span>
             </h6>
             <span class="divpr">
-              <button id="pr{{i.id}}" class="btn btn-primary cart btn-sm mt-0">
+              <button id="pr{{i.id}}" class="btn btn-primary cart btn-sm mt-0" data-name="{{i.product_name}}" data-price="{{i.price}}">
                 Add to Cart <i class="fa-solid fa-cart-shopping"></i>
               </button>
             </span>
@@ -75,154 +75,7 @@ Home
 </section>
 <!-- End Portfolio Section -->
 
-<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-  
- 
-<script>
-  // Initialize cart from localStorage
-  if (localStorage.getItem('cart') == null) {
-      var cart = {};
-  } else {
-      cart = JSON.parse(localStorage.getItem('cart'));
-      updateCart(cart);
-  }
-
-  // Function to add items to cart
-  function addToCart(itemId) {
-      console.log("Adding to cart:", itemId);
-      if (cart[itemId] != undefined) {
-          cart[itemId][0] = cart[itemId][0] + 1;
-      } else {
-          let name = document.getElementById('namepr' + itemId.slice(2)).innerHTML;
-          let price = document.getElementById('pricepr' + itemId.slice(2)).innerHTML;
-          cart[itemId] = [1, name, price];
-          console.log("Added new item:", { itemId, name, price });
-      }
-      updateCart(cart);
-      localStorage.setItem('cart', JSON.stringify(cart));
-      
-      // Visual feedback
-      let btn = document.getElementById(itemId);
-      btn.classList.remove('btn-primary');
-      btn.classList.add('btn-success');
-      setTimeout(() => {
-          btn.classList.remove('btn-success');
-          btn.classList.add('btn-primary');
-      }, 500);
-  }
-  });
-  // add pop over to cart
-
-  $('#popcart').popover();
-
-  updatePopover(cart);
-  function updatePopover(cart) {
-      let popStr = "";
-      if (Object.keys(cart).length == 0) {
-          popStr = "<h5>Your cart is empty</h5>";
-      } else {
-          popStr = "<h5>Cart Items</h5><div class='mx-2 my-2'>";
-          let total = 0;
-          for (let item in cart) {
-              let name = document.getElementById('namepr' + item.slice(2)).innerHTML;
-              let price = parseFloat(document.getElementById('pricepr' + item.slice(2)).innerHTML);
-              total += cart[item][0] * price;
-              popStr += `
-                  <b>${name}</b>: ${cart[item][0]} qty<br>
-                  Price: ₹${(cart[item][0] * price).toFixed(2)}<br><hr>
-              `;
-          }
-          popStr += `
-              <b>Total: ₹${total.toFixed(2)}</b><br>
-              <a href='/checkout'><button class='btn btn-success btn-sm'>Checkout</button></a>
-              <button class='btn btn-danger btn-sm' onclick='clearCart()'>Clear Cart</button>
-          </div>`;
-      }
-      document.getElementById('popcart').setAttribute('data-content', popStr);
-  }
-
-  // Initialize popover
-  $('#popcart').popover({
-      html: true,
-      container: 'body',
-      trigger: 'click',
-  });
-
-  function clearCart() {
-      for (let item in cart) {
-          document.getElementById('divpr' + item.slice(2)).innerHTML = `
-              <button id="${item}" class="btn btn-primary cart btn-sm mt-0" onclick="addToCart('${item}')">
-                  Add to Cart <i class="fa-solid fa-cart-shopping"></i>
-              </button>
-          `;
-      }
-      cart = {};
-      localStorage.removeItem('cart');
-      document.getElementById('cart').innerHTML = "0";
-      updatePopover(cart);
-  }
-
-  // Initialize popover
-  $('#popcart').popover({
-      html: true,
-      content: function() {
-          return document.getElementById('popcart').getAttribute('data-content');
-      }
-  });
-
-  function updateCart(cart) {
-      try {
-          // Calculate total quantity
-          let sum = 0;
-          for (let item in cart) {
-              sum += cart[item][0];
-              // Update quantity display if it exists
-              let divElement = document.getElementById('divpr' + item.slice(2));
-              if (divElement && cart[item][0] > 0) {
-                  divElement.innerHTML = `
-                      <button id="${item}" class="btn btn-primary cart btn-sm mt-0">
-                          Quantity: ${cart[item][0]} <i class="fa-solid fa-cart-shopping"></i>
-                      </button>
-                  `;
-              }
-          }
-          
-          // Update cart counter
-          document.getElementById('cart').innerHTML = sum;
-          
-          // Update popover content
-          updatePopover(cart);
-          
-          console.log('Cart updated, total items:', sum);
-      } catch (error) {
-          console.error('Error updating cart:', error);
-      }
-  }
-  }
-
-  // Handle quantity adjustments
-  // Handle quantity adjustments
-  $('.divpr').on('click', 'button.minus, button.plus', function(e) {
-      e.preventDefault();
-      try {
-          const itemId = $(this).data('item');
-          if (!itemId || !cart[itemId]) return;
-          
-          if ($(this).hasClass('minus')) {
-              cart[itemId][0] = Math.max(0, cart[itemId][0] - 1);
-          } else {
-              cart[itemId][0] += 1;
-          }
-          
-          localStorage.setItem('cart', JSON.stringify(cart));
-          updateCart(cart);
-      } catch (error) {
-          console.error('Error updating quantity:', error);
-      }
-  });
-</script>
+<!-- Cart behavior handled by static/assets/js/cart.js -->
 
 
 
@@ -231,10 +84,7 @@ Home
 
 
 
-<div id="cartNotification" class="alert alert-success" style="display:none; position:fixed; top:20px; right:20px; z-index:9999;">
-        Item added to cart!
-    </div>
-    <script src="{% static 'assets/js/cart.js' %}"></script>
+    
 {% endblock %}
     </body>
 </html>
